@@ -5,9 +5,13 @@ import {
   LoadScript,
 } from "@react-google-maps/api";
 import Styles from "./zipform.module.scss";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 
 //const mapStyles = require("./GoogleMapStyles.json");\
-import Yack from "./GoogleMapStyles.json";
+//import Yack from "./GoogleMapStyles.json";
 //console.log(mapStyles);
 
 const mykey = process.env.REACT_APP_KEY;
@@ -17,19 +21,32 @@ const Zips = () => {
   const [origin, setOrigin] = useState("24138");
   const [dest, setDest] = useState("90210");
   const [zipsFill, setZipsFill] = useState(false);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [myChart, setMyChart] = useState(null);
   //const API_KEY = process.env.GOOGLE_API_KEY;
-  let finalDest = "aa";
-  let finalOrigin = "aa";
-  let zipsFilled = false;
+  const [rowData, setRowData] = useState([
+    { make: "Toyota", model: "Celica", price: 35000 },
+    { make: "Ford", model: "Mondeo", price: 32000 },
+    { make: "Porsche", model: "Boxter", price: 72000 },
+  ]);
+
   const handleClick = (e) => {
     e.preventDefault();
     setZipsFill(true);
-    console.log(finalDest);
+
     console.log("ayyy");
-    finalOrigin = origin;
-    finalDest = dest;
-    console.log(finalDest);
-    console.log(zipsFill);
+  };
+  const handleDistanceResponse = (distData) => {
+    setMyChart(
+      <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
+        <AgGridReact rowData={rowData}>
+          <AgGridColumn field="make"></AgGridColumn>
+          <AgGridColumn field="model"></AgGridColumn>
+          <AgGridColumn field="price"></AgGridColumn>
+        </AgGridReact>
+      </div>
+    );
   };
 
   const handleChange = (e) => {
@@ -82,6 +99,7 @@ const Zips = () => {
           </button>
         </div>
       </section>
+      <section className={Styles.results}>{myChart}</section>
 
       <div className="map-container">
         <LoadScript googleMapsApiKey={mykey}>
@@ -100,7 +118,7 @@ const Zips = () => {
                   travelMode: "DRIVING",
                 }}
                 callback={(response) => {
-                  console.log(response);
+                  handleDistanceResponse(response);
                 }}
               />
             ) : null}
