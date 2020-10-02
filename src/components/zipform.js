@@ -6,7 +6,9 @@ import {
 } from "@react-google-maps/api";
 import Styles from "./zipform.module.scss";
 
-const mapStyles = require("./GoogleMapStyles.json");
+//const mapStyles = require("./GoogleMapStyles.json");\
+import Yack from "./GoogleMapStyles.json";
+//console.log(mapStyles);
 
 const mykey = process.env.REACT_APP_KEY;
 const Zips = () => {
@@ -14,14 +16,20 @@ const Zips = () => {
   const [travelMode, setTravelMode] = useState("driving");
   const [origin, setOrigin] = useState("24138");
   const [dest, setDest] = useState("90210");
+  const [zipsFill, setZipsFill] = useState(false);
   //const API_KEY = process.env.GOOGLE_API_KEY;
-  let finalDest = "24138";
-  let finalOrigin = "22003, 20120";
-
+  let finalDest = "aa";
+  let finalOrigin = "aa";
+  let zipsFilled = false;
   const handleClick = (e) => {
     e.preventDefault();
+    setZipsFill(true);
+    console.log(finalDest);
+    console.log("ayyy");
     finalOrigin = origin;
     finalDest = dest;
+    console.log(finalDest);
+    console.log(zipsFill);
   };
 
   const handleChange = (e) => {
@@ -36,19 +44,16 @@ const Zips = () => {
     // `set${e.target.id}`(e.target.value);
   };
 
-  const containerStyle = {
-    width: "100%",
-    height: "500px",
-    margin: "0 auto",
-    elementType: "geometry",
-  };
-
   const center = {
     lat: -3.745,
     lng: -38.523,
   };
+  const mapContainerStyle = {
+    height: "50vh",
+    width: "100%",
+  };
   return (
-    <div>
+    <div className="map">
       <section className={Styles.myForm}>
         <h1>Zip code to zip code(s) driving distance(s)</h1>
         <div className={Styles.flex}>
@@ -78,28 +83,28 @@ const Zips = () => {
         </div>
       </section>
 
-      <div className="mapCon">
+      <div className="map-container">
         <LoadScript googleMapsApiKey={mykey}>
           <GoogleMap
-            mapContainerStyle={containerStyle}
+            mapContainerStyle={mapContainerStyle}
             center={center}
             zoom={10}
-            defaultOptions={{
-              styles: mapStyles,
-            }}
+            //mapTypeId="a8f4c120392db471"
           >
             {/* Child components, such as markers, info windows, etc. */}
+            {zipsFill ? (
+              <DistanceMatrixService
+                options={{
+                  destinations: [dest],
+                  origins: [origin],
+                  travelMode: "DRIVING",
+                }}
+                callback={(response) => {
+                  console.log(response);
+                }}
+              />
+            ) : null}
 
-            <DistanceMatrixService
-              options={{
-                destinations: [finalDest],
-                origins: [finalOrigin],
-                travelMode: "DRIVING",
-              }}
-              callback={(response) => {
-                console.log(response);
-              }}
-            />
             <></>
           </GoogleMap>
         </LoadScript>
