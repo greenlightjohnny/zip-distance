@@ -37,6 +37,7 @@ const App = () => {
   const [gridColumnApi, setGridColumnApi] = useState(null);
 
   const [change, setChange] = useState(false);
+  const [control, setControl] = useState(false);
   //const API_KEY = process.env.GOOGLE_API_KEY;
   const [rowData, setRowData] = useState([
     { make: "Toyota", model: "Celica", price: 35000 },
@@ -58,40 +59,43 @@ const App = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log(renderMap);
+    console.log("Clicked");
     console.log(rData);
-    setRenderMap(true);
+    setControl(true);
   };
   ////////////////////////
   //////////////////////////
   const distanceCallback = (response) => {
-    console.log("Hello");
-    console.log(response);
+    console.log("distcallbackcalled");
+    console.log("distcall res", response);
 
     if (response !== null) {
-      setRData(response);
-      setRenderMap(false);
-      if (response.status === "OK") {
-        console.log(response);
+      if (
+        response.destinationAddresses[0] !== "" &&
+        response.originAddresses[0] !== ""
+      ) {
+        console.log("res was okkkk");
+        setRData(response.originAddresses);
       } else {
-        console.log("response: ", response);
+        console.log("response: error? ", response);
       }
     }
+    setControl(false);
   };
   let loadMe = false;
-  console.log(initialRender.current);
-  useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-    } else {
-      console.log("yeppp");
-      loadMe = true;
-      setShouldWe(true);
-      setChange(true);
-    }
+  //console.log(initialRender.current);
+  // useEffect(() => {
+  //   if (initialRender.current) {
+  //     initialRender.current = false;
+  //   } else {
+  //     console.log("yeppp");
+  //     loadMe = true;
+  //     setShouldWe(true);
+  //     setChange(true);
+  //   }
 
-    console.log(loadMe);
-  }, [renderMap]);
+  //   console.log(loadMe);
+  // }, [renderMap]);
 
   const dataArray = (
     <div
@@ -123,7 +127,7 @@ const App = () => {
       <section className={Styles.myForm}>
         <h1>Zip code to zip code(s) driving distance(s)</h1>
         <div className={Styles.flex}>
-          <div className={Styles.origin}>
+          <div className={Styles.origina}>
             <label>Origin Zip</label>
             <br />
             <input
@@ -133,7 +137,7 @@ const App = () => {
               onChange={handleChange}
             />
           </div>
-          <div className={Styles.origin}>
+          <div className={Styles.origina}>
             <label>Destination Zip</label>
             <br />
             <input
@@ -160,7 +164,7 @@ const App = () => {
               onLoad={onLoad}
               onUnmount={onUnmount}
             >
-              {shouldWe ? (
+              {control ? (
                 <DistanceMatrixService
                   options={{
                     destinations: [dest],
@@ -170,7 +174,7 @@ const App = () => {
                   callback={distanceCallback}
                 />
               ) : (
-                console.log("yolo")
+                console.log("sistapinot rendered")
               )}
             </GoogleMap>
           </LoadScript>
